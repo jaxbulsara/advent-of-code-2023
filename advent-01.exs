@@ -24,8 +24,8 @@ defmodule Advent do
   end
 
   def decode(line) do
-    first = line |> String.codepoints() |> find_value
-    last = line |> String.reverse() |> String.codepoints() |> find_value
+    first = line |> find_value
+    last = line |> String.reverse() |> find_value
     {decoded, _} = (first <> last) |> Integer.parse()
     decoded
   end
@@ -40,30 +40,41 @@ defmodule Advent do
     end
   end
 
-  def words_to_digits(line) do
-    numbers = [
-      ["nine", "9"],
-      ["eight", "8"],
-      ["seven", "7"],
-      ["six", "6"],
-      ["five", "5"],
-      ["four", "4"],
-      ["three", "3"],
-      ["two", "2"],
-      ["one", "1"]
-    ]
-
-    IO.puts(line)
-    line = replace(numbers, line)
-    IO.puts(line)
-    line
+  def find_value(line) do
+    find_value(String.codepoints(line))
   end
 
-  def replace([], line), do: line
+  def words_to_digits(line) do
+    words_to_digits("", String.codepoints(line))
+  end
 
-  def replace([replacement | rest], line) do
+  def words_to_digits(line, []), do: line
+
+  def words_to_digits(line, [char | rest]) do
+    numbers = [
+      ["one", "1"],
+      ["two", "2"],
+      ["three", "3"],
+      ["four", "4"],
+      ["five", "5"],
+      ["six", "6"],
+      ["seven", "7"],
+      ["eight", "8"],
+      ["nine", "9"]
+    ]
+
+    IO.puts(line <> ", " <> char <> ", " <> List.to_string(rest))
+
+    line = (line <> char) |> replace(numbers)
+    IO.puts(line)
+    line |> words_to_digits(rest)
+  end
+
+  def replace(line, []), do: line
+
+  def replace(line, [replacement | rest]) do
     [word, digit] = replacement
-    replace(rest, line) |> String.replace(word, digit)
+    replace(line, rest) |> String.replace(word, digit)
   end
 end
 
